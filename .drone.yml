@@ -59,7 +59,7 @@ steps:
       - name: docker_sock
         path: /var/run/docker.sock
     commands:
-      - echo "🚀 Running container from image myapp:${DRONE_BUILD_NUMBER}"
+
       - docker run -d --name myapp-test myapp:${DRONE_BUILD_NUMBER}
       - sleep 3
       - docker ps | grep myapp
