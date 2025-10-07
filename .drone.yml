@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: build
+name: build-docker
 
 steps:
   - name: build
@@ -24,9 +24,28 @@ steps:
       - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
       - ls -lh *.zip
 
-  - name: use-artifact
-    image: alpine
+  - name: create-docker-image
+    image: docker:latest
     commands:
-      - echo "File .zip có sẵn trong workspace:"
-      - ls -lh *.zip
-      - echo "Tên file: myapp-${DRONE_BUILD_NUMBER}.zip"
+      - apk add --no-cache zip
+      - unzip myapp-${DRONE_BUILD_NUMBER}.zip
+      - chmod +x myapp
+      - |
+        cat > Dockerfile << EOF
+        FROM alpine:latest
+        WORKDIR /app
+        COPY myapp .
+        RUN chmod +x myapp
+        CMD ["./myapp"]
+        EOF
+      - docker build -t myapp:${DRONE_BUILD_NUMBER} .
+      - docker images | grep myapp
+      - echo "✅ Docker image created: myapp:${DRONE_BUILD_NUMBER}"
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
