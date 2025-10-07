@@ -27,3 +27,11 @@ steps:
       - apk add --no-cache zip
       - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
       - ls -lh *.zip
+    volumes:
+      - name: artifacts
+        path: /artifacts
+
+volumes:
+  - name: artifacts
+    host:
+      path: /tmp/drone-artifacts
