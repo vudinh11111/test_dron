@@ -4,13 +4,15 @@ name: build
 
 steps:
   - name: build
-    image: golang:1.22
+    image: golang:1.22-alpine
+    pull: if-not-exists   # chỉ pull nếu chưa có
     commands:
       - go version
       - go mod tidy
       - go build -v ./...
 
   - name: test
-    image: golang:1.22
+    image: golang:1.22-alpine
+    pull: if-not-exists
     commands:
       - go test ./... -v
