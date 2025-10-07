@@ -27,6 +27,6 @@ steps:
   - name: use-artifact
     image: alpine
     commands:
-      - echo "File .zip có sẵn ngay trong workspace:"
+      - echo "File .zip có sẵn trong workspace:"
       - ls -lh *.zip
       - echo "Tên file: myapp-${DRONE_BUILD_NUMBER}.zip"
