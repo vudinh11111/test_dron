@@ -19,9 +19,6 @@ steps:
       - go mod tidy
       - go build -v -o myapp ./...
       - ls -lh myapp
-    volumes:
-      - name: artifacts
-        path: /drone/src/artifacts
 
   - name: test
     image: golang:1.22-alpine
@@ -30,11 +27,9 @@ steps:
       - ls -lh /drone/src
       - ./myapp --version
       - go test ./... -v
-    volumes:
-      - name: artifacts
-        path: /drone/src/artifacts
 
-volumes:
-  - name: artifacts
-    host:
-      path: /tmp/drone-artifacts
+  - name: save-artifact
+    image: drillster/drone-archive
+    settings:
+      file: myapp-${DRONE_BUILD_NUMBER}.zip
+      source: ./myapp
