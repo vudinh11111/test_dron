@@ -2,14 +2,23 @@ kind: pipeline
 type: docker
 name: build
 
+clone:
+  disable: false
+
+workspace:
+  base: /drone/src
+  path: .
+
 steps:
   - name: build
-    image: golang:1.22.12-alpine3.20
-    pull: if-not-exists   # chỉ pull nếu chưa có
+    image: golang:1.22-alpine
+    pull: if-not-exists
     commands:
+      - apk add --no-cache git bash
       - go version
       - go mod tidy
-      - go build -v ./...
+      - go build -v -o myapp ./...
+      - ls -lh myapp
 
   - name: test
     image: golang:1.22-alpine
