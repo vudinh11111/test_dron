@@ -2,6 +2,10 @@ kind: pipeline
 type: docker
 name: build
 
+workspace:
+  base: /drone/src
+  path: your-repo-name
+
 steps:
   - name: build
     image: golang:1.22-alpine
@@ -14,6 +18,7 @@ steps:
   - name: test
     image: golang:1.22-alpine
     commands:
+      - ls -lh
       - ./myapp --version
       - go test ./... -v
 
@@ -21,5 +26,7 @@ steps:
     image: alpine
     commands:
       - apk add --no-cache zip
+      - ls -la  # Kiểm tra file myapp có trong workspace không
       - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
       - ls -lh *.zip
+      - pwd  # Sẽ hiển thị /drone/src/your-repo-name
