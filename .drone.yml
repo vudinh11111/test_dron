@@ -40,7 +40,7 @@ steps:
         EOF
       - docker build -t myapp:${DRONE_BUILD_NUMBER} .
       - docker images | grep myapp
-      - echo "[OK] File zip saved to: /tmp/drone-artifacts/myapp-${DRONE_BUILD_NUMBER}.zip"
+      
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
