@@ -4,7 +4,7 @@ name: build
 
 steps:
   - name: build
-    image: golang:1.22-alpine
+    image: golang:1.22.12-alpine3.20
     pull: if-not-exists   # chỉ pull nếu chưa có
     commands:
       - go version
