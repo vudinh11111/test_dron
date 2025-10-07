@@ -19,6 +19,9 @@ steps:
       - go mod tidy
       - go build -v -o myapp ./...
       - ls -lh myapp
+    volumes:
+      - name: artifacts
+        path: /drone/src/artifacts
 
   - name: test
     image: golang:1.22-alpine
@@ -27,9 +30,11 @@ steps:
       - ls -lh /drone/src
       - ./myapp --version
       - go test ./... -v
+    volumes:
+      - name: artifacts
+        path: /drone/src/artifacts
 
-  - name: save-artifact
-    image: plugins/artifact
-    settings:
-      source: myapp
-      target: myapp-${DRONE_BUILD_NUMBER}.bin
+volumes:
+  - name: artifacts
+    host:
+      path: /tmp/drone-artifacts
