@@ -37,7 +37,7 @@ steps:
         path: /var/run/docker.sock
     commands:
       - apk add --no-cache unzip
-      - unzip -o myapp-${DRONE_BUILD_NUMBER}.zip   # ⚙️ Thêm -o để không bị hỏi ghi đè
+      - unzip -o myapp-${DRONE_BUILD_NUMBER}.zip
       - chmod +x myapp
       - |
         cat > Dockerfile <<'EOF'
@@ -49,6 +49,23 @@ steps:
         EOF
       - docker build -t myapp:${DRONE_BUILD_NUMBER} .
       - docker images | grep myapp
+    when:
+      status:
+        - success
+
+  - name: run-docker-image
+    image: docker:latest
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+    commands:
+      - echo "🚀 Running container from image myapp:${DRONE_BUILD_NUMBER}"
+      - docker run -d --name myapp-test myapp:${DRONE_BUILD_NUMBER}
+      - sleep 3
+      - docker ps | grep myapp
+      - docker logs myapp-test || true
+      - docker stop myapp-test
+      - docker rm myapp-test
     when:
       status:
         - success
