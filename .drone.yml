@@ -2,34 +2,24 @@ kind: pipeline
 type: docker
 name: build
 
-clone:
-  disable: false
-
-workspace:
-  base: /drone/src
-  path: .
-
 steps:
   - name: build
     image: golang:1.22-alpine
-    pull: if-not-exists
     commands:
-      - apk add --no-cache git bash
-      - go version
+      - apk add --no-cache git
       - go mod tidy
       - go build -v -o myapp ./...
       - ls -lh myapp
 
   - name: test
     image: golang:1.22-alpine
-    pull: if-not-exists
     commands:
-      - ls -lh /drone/src
       - ./myapp --version
       - go test ./... -v
 
-  - name: save-artifact
-    image: drillster/drone-archive
-    settings:
-      file: myapp-${DRONE_BUILD_NUMBER}.zip
-      source: ./myapp
+  - name: archive
+    image: alpine
+    commands:
+      - apk add --no-cache zip
+      - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
+      - ls -lh *.zip
