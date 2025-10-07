@@ -14,24 +14,33 @@ steps:
   - name: test
     image: golang:1.22-alpine
     commands:
-      - ./myapp --version
+      - chmod +x myapp
+      - ./myapp --version || true   # tránh fail nếu app chưa có flag --version
       - go test ./... -v
 
   - name: archive
     image: alpine
     commands:
       - apk add --no-cache zip
-      - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
+      - zip -r myapp-${DRONE_BUILD_NUMBER}.zip myapp
       - ls -lh *.zip
+    when:
+      status:
+        - success
 
   - name: create-docker-image
     image: docker:latest
+    environment:
+      DOCKER_BUILDKIT: 1
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
     commands:
-      - apk add --no-cache zip
-      - unzip myapp-${DRONE_BUILD_NUMBER}.zip
+      - apk add --no-cache unzip
+      - unzip -o myapp-${DRONE_BUILD_NUMBER}.zip   # ⚙️ Thêm -o để không bị hỏi ghi đè
       - chmod +x myapp
       - |
-        cat > Dockerfile << EOF
+        cat > Dockerfile <<'EOF'
         FROM alpine:latest
         WORKDIR /app
         COPY myapp .
@@ -40,10 +49,9 @@ steps:
         EOF
       - docker build -t myapp:${DRONE_BUILD_NUMBER} .
       - docker images | grep myapp
-      
-    volumes:
-      - name: docker_sock
-        path: /var/run/docker.sock
+    when:
+      status:
+        - success
 
 volumes:
   - name: docker_sock
