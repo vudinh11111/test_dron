@@ -3,9 +3,9 @@ type: docker
 name: build
 
 volumes:
-  - name: current-dir
+  - name: artifacts-volume
     host:
-      path: /tmp/drone-artifacts  # Hoặc đường dẫn tuyệt đối đến thư mục bạn muốn
+      path: /tmp/drone-artifacts
 
 workspace:
   base: /drone/src
@@ -29,11 +29,11 @@ steps:
   - name: archive
     image: alpine
     volumes:
-      - name: current-dir
+      - name: artifacts-volume
         path: /artifacts
     commands:
       - apk add --no-cache zip
       - cp myapp /artifacts/
       - cd /artifacts && zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
-      - echo "File zip đã được lưu tại: /tmp/drone-artifacts/myapp-${DRONE_BUILD_NUMBER}.zip"
+      - echo "✅ File zip đã được lưu tại: /tmp/drone-artifacts/myapp-${DRONE_BUILD_NUMBER}.zip"
       - ls -lh /artifacts/*.zip
