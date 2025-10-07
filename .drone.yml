@@ -24,4 +24,12 @@ steps:
     image: golang:1.22-alpine
     pull: if-not-exists
     commands:
+      - ls -lh /drone/src
+      - ./myapp --version
       - go test ./... -v
+
+  - name: save-artifact
+    image: plugins/artifact
+    settings:
+      source: myapp
+      target: myapp-${DRONE_BUILD_NUMBER}.bin
