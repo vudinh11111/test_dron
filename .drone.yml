@@ -26,5 +26,5 @@ steps:
     commands:
       - apk add --no-cache zip
       - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
-      - echo "✅ File zip created: myapp-${DRONE_BUILD_NUMBER}.zip"
+      - echo "File zip created: myapp-${DRONE_BUILD_NUMBER}.zip"
       - ls -lh *.zip
