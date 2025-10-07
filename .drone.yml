@@ -10,7 +10,7 @@ steps:
   - name: build
     image: golang:1.22-alpine
     commands:
-      - apk add --no-cache git
+      - apk add --no-cache git bash zip
       - go mod tidy
       - go build -v -o myapp ./...
       - ls -lh myapp
@@ -26,6 +26,5 @@ steps:
     commands:
       - apk add --no-cache zip
       - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
+      - echo "✅ File zip created: myapp-${DRONE_BUILD_NUMBER}.zip"
       - ls -lh *.zip
-      - echo "File: myapp-${DRONE_BUILD_NUMBER}.zip"
-      - echo "Location: $(pwd)/myapp-${DRONE_BUILD_NUMBER}.zip"
