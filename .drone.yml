@@ -35,5 +35,5 @@ steps:
       - apk add --no-cache zip
       - cp myapp /artifacts/
       - cd /artifacts && zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
-      - echo "✅ File zip đã được lưu tại: /tmp/drone-artifacts/myapp-${DRONE_BUILD_NUMBER}.zip"
+      - echo "File zip đã được lưu tại: /tmp/drone-artifacts/myapp-${DRONE_BUILD_NUMBER}.zip"
       - ls -lh /artifacts/*.zip
