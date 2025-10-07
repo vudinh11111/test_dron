@@ -1,0 +1,16 @@
+kind: pipeline
+type: docker
+name: build
+
+steps:
+  - name: build
+    image: golang:1.22
+    commands:
+      - go version
+      - go mod tidy
+      - go build -v ./...
+
+  - name: test
+    image: golang:1.22
+    commands:
+      - go test ./... -v
