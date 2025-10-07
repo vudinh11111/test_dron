@@ -2,11 +2,6 @@ kind: pipeline
 type: docker
 name: build
 
-volumes:
-  - name: artifacts-volume
-    host:
-      path: /tmp/drone-artifacts
-
 workspace:
   base: /drone/src
   path: .
@@ -28,12 +23,9 @@ steps:
 
   - name: archive
     image: alpine
-    volumes:
-      - name: artifacts-volume
-        path: /artifacts
     commands:
       - apk add --no-cache zip
-      - cp myapp /artifacts/
-      - cd /artifacts && zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
-      - echo "✅ File zip saved to: /tmp/drone-artifacts/myapp-${DRONE_BUILD_NUMBER}.zip"
-      - ls -lh /artifacts/*.zip
+      - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
+      - ls -lh *.zip
+      - echo "File: myapp-${DRONE_BUILD_NUMBER}.zip"
+      - echo "Location: $(pwd)/myapp-${DRONE_BUILD_NUMBER}.zip"
