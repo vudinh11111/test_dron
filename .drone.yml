@@ -22,22 +22,11 @@ steps:
     commands:
       - apk add --no-cache zip
       - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
-      - cp myapp-${DRONE_BUILD_NUMBER}.zip /cache/  # COPY FILE VÀO CACHE
-      - echo "File đã được lưu vào cache:"
-      - ls -lh /cache/*.zip
-    volumes:
-      - name: cache
-        path: /cache
+      - ls -lh *.zip
 
-  - name: store-artifact
+  - name: use-artifact
     image: alpine
     commands:
-      - echo "Các file trong cache volume:"
-      - ls -lh /cache/
-      - echo "File .zip có sẵn tại: /cache/myapp-${DRONE_BUILD_NUMBER}.zip"
-      - cp /cache/myapp-${DRONE_BUILD_NUMBER}.zip ./
-      - echo "File đã được copy về workspace hiện tại"
+      - echo "File .zip có sẵn ngay trong workspace:"
       - ls -lh *.zip
-    volumes:
-      - name: cache
-        path: /cache
+      - echo "Tên file: myapp-${DRONE_BUILD_NUMBER}.zip"
