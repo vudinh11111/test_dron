@@ -2,9 +2,14 @@ kind: pipeline
 type: docker
 name: build
 
+volumes:
+  - name: current-dir
+    host:
+      path: /tmp/drone-artifacts  # Hoặc đường dẫn tuyệt đối đến thư mục bạn muốn
+
 workspace:
   base: /drone/src
-  path: your-repo-name
+  path: .
 
 steps:
   - name: build
@@ -18,15 +23,17 @@ steps:
   - name: test
     image: golang:1.22-alpine
     commands:
-      - ls -lh
       - ./myapp --version
       - go test ./... -v
 
   - name: archive
     image: alpine
+    volumes:
+      - name: current-dir
+        path: /artifacts
     commands:
       - apk add --no-cache zip
-      - ls -la  # Kiểm tra file myapp có trong workspace không
-      - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
-      - ls -lh *.zip
-      - pwd  # Sẽ hiển thị /drone/src/your-repo-name
+      - cp myapp /artifacts/
+      - cd /artifacts && zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
+      - echo "✅ File zip đã được lưu tại: /tmp/drone-artifacts/myapp-${DRONE_BUILD_NUMBER}.zip"
+      - ls -lh /artifacts/*.zip
