@@ -2,10 +2,6 @@ kind: pipeline
 type: docker
 name: build
 
-workspace:
-  base: /drone/src
-  path: .
-
 steps:
   - name: build
     image: golang:1.22-alpine
@@ -28,10 +24,13 @@ steps:
       - zip myapp-${DRONE_BUILD_NUMBER}.zip myapp
       - ls -lh *.zip
     volumes:
-      - name: artifacts
-        path: /artifacts
+      - name: cache
+        path: /cache
 
-volumes:
-  - name: artifacts
-    host:
-      path: /tmp/drone-artifacts
+  - name: store-artifact
+    image: alpine
+    commands:
+      - echo "Artifact stored in cache volume"
+    volumes:
+      - name: cache
+        path: /cache
